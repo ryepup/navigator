@@ -10,6 +10,8 @@ import Builder from './builder/Builder'
 import JobBoard from './missions/JobBoard'
 import MissionViewer from './missions/MissionViewer'
 import store from './model/store'
+import './App.css'
+
 
 const Home = () => (
   <div>
