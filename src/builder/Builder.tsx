@@ -14,13 +14,15 @@ interface BuilderProps extends React.Props<{}> {
 }
 
 const partCell = (part?: ShipPart) => {
+    // TODO: some graphics
     return part ? part.name : '-'
 }
 
 const partTable = (ship: Ship) => {
     const makeCell = (i: number, j: number) => {
+        const key = `${i}:${j}`
         return (
-            <td key={`${i}:${j}`}>
+            <td key={key}>
                 {partCell(ship.parts[i][j])}
             </td>
         )
@@ -32,9 +34,11 @@ const partTable = (ship: Ship) => {
 
         return <tr key={`${i}:`}><th>{i}</th>{cells}</tr>
     }
+
     const rows = Range(0, ship.height)
         .map(makeRow)
 
+        // TODO: style this table to be consistent
     return (
         <table>
             <tbody>
@@ -51,9 +55,18 @@ const partTable = (ship: Ship) => {
 const render = (props: BuilderProps) => {
     return (
         <div className="builder">
-
             {partTable(props.ship)}
             TODO: ship builder
+
+            TODO: list of parts in storage
+            
+            TODO: click a part to enter "add mode", which highlights eligible
+            cells in the table. Clicking the cell completes the "add" and dispatches to state
+
+            TODO: list overall ship stats, with diffs in add mode
+
+            TODO: if you add over an existing component, show the stats and
+            confirm
     </div>
     )
 }

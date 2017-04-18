@@ -8,10 +8,12 @@ export interface State {
     credits: Credit
 }
 
+export type InstalledPart = ShipPart | undefined
+
 export interface Ship {
     height: number,
     width: number,
-    parts: ShipPart[][]
+    parts: InstalledPart[][]
 }
 
 export interface ShipPart {

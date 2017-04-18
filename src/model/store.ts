@@ -1,5 +1,6 @@
 import { createStore, Action } from 'redux'
 import { State } from './interfaces'
+import QDrive from './parts/QDrive'
 
 const INITIAL_STATE: State = {
     ship: {
@@ -7,7 +8,7 @@ const INITIAL_STATE: State = {
         width: 3,
         parts: [
             [],
-            [],
+            [undefined, QDrive],
             []
         ]
     },
