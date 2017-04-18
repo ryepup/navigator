@@ -2,6 +2,7 @@ import * as React from 'react';
 import { State, Ship, ShipPart } from '../model/interfaces'
 import { connect } from 'react-redux'
 import { Range } from 'immutable'
+import { Grid, Row, Col, Table} from 'react-bootstrap'
 
 const mapStateToProps = (state: State): BuilderProps => ({
     ship: state.ship,
@@ -40,7 +41,7 @@ const partTable = (ship: Ship) => {
 
         // TODO: style this table to be consistent
     return (
-        <table>
+        <Table bordered={true}>
             <tbody>
                 <tr>
                     <td />
@@ -48,18 +49,24 @@ const partTable = (ship: Ship) => {
                 </tr>
                 {rows}
             </tbody>
-        </table>
+        </Table>
     )
 }
 
 const render = (props: BuilderProps) => {
     return (
         <div className="builder">
-            {partTable(props.ship)}
-            TODO: ship builder
-
-            TODO: list of parts in storage
-            
+            <Grid>
+                <Row>
+                    <Col sm={6}>
+                        {partTable(props.ship)}
+                    </Col>
+                    <Col sm={6}>
+                        TODO: list of parts in storage
+                    </Col>    
+                </Row>    
+            </Grid>
+                       
             TODO: click a part to enter "add mode", which highlights eligible
             cells in the table. Clicking the cell completes the "add" and dispatches to state
 
