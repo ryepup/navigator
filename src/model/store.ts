@@ -20,10 +20,13 @@ const INITIAL_STATE: State = {
 }
 
 type ShipPartActions = PlaceShipPartAction | OtherAction
+
 const shipPartReducer = (state: InstalledPart[][] = INITIAL_STATE.ship.parts, action: ShipPartActions) => {
     switch (action.type) {
         case PLACE_SHIP_PART:
-            const copy = state.map(row => row.map(val => val))
+            const copy = state.map(row => row.map(val => {
+                return val === action.part ? undefined : val
+            }))
             copy[action.i][action.j] = action.part
             return copy
         default:

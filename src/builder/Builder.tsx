@@ -1,10 +1,13 @@
 import * as React from 'react';
-import { State, Ship, ShipPart } from '../model/interfaces'
 import { connect } from 'react-redux'
 import { Action, Dispatch } from 'redux'
+import { Grid, Row, Col } from 'react-bootstrap'
+
+import { State, Ship, ShipPart } from '../model/interfaces'
 import { PLACE_SHIP_PART } from '../model/actions'
-import { Range } from 'immutable'
-import { Grid, Row, Col, Table, ListGroup, ListGroupItem } from 'react-bootstrap'
+import { BuilderState } from './interfaces'
+import { ShipTable } from './ShipTable'
+import { StorageParts } from './StorageParts'
 import './Builder.css'
 
 const mapStateToProps = (state: State): StateProps => ({
@@ -29,86 +32,6 @@ interface DispatchProps {
 
 type BuilderProps = StateProps & DispatchProps
 
-interface BuilderState {
-    partBeingPlaced?: ShipPart
-}
-
-interface StorageProps extends BuilderState {
-    parts: ShipPart[]
-    onPartSelected: (part: ShipPart) => void;
-}
-
-interface TableProps extends BuilderState {
-    ship: Ship,
-    onCellSelected: (i: number, j: number) => void;
-}
-
-
-const partCell = (part?: ShipPart) => {
-    // TODO: some graphics
-    return part ? part.name : '-'
-}
-
-const partTable = (props: TableProps) => {
-
-    const ship = props.ship
-    const isBeingPlaced = props.partBeingPlaced !== undefined
-    const onClick = isBeingPlaced ? props.onCellSelected : () => undefined;
-
-    const makeCell = (i: number, j: number) => {
-        const key = `${i}:${j}`
-        const part = ship.parts[i][j]
-        const className = isBeingPlaced && !part ? 'selectable' : ''
-
-        return (
-            <td key={key} className={className} onClick={() => onClick(i, j)}>
-                {partCell(part)}
-            </td>
-        )
-    }
-
-    const makeRow = (i: number) => {
-        const cells = Range(0, ship.width)
-            .map((j: number) => makeCell(i, j))
-
-        return <tr key={`${i}:`}><th>{i}</th>{cells}</tr>
-    }
-
-    const rows = Range(0, ship.height)
-        .map(makeRow)
-
-    // TODO: style this table to be consistent
-    return (
-        <Table bordered={true}>
-            <tbody>
-                <tr>
-                    <td />
-                    {Range(0, ship.width).map(i => <th key={`:${i}`}>{i}</th>)}
-                </tr>
-                {rows}
-            </tbody>
-        </Table>
-    )
-}
-
-
-const storage = (props: StorageProps) => {
-    if (props.parts.length === 0) {
-        return <p className="help-block">No parts available</p>
-    }
-
-    const makeGroupItem = (part: ShipPart) => {
-        const onClick = () => props.onPartSelected(part)
-        const isActive = part === props.partBeingPlaced
-        return (
-            <ListGroupItem key={part.name} onClick={onClick} active={isActive}>
-                {part.name}
-            </ListGroupItem>)
-    }
-
-    const items = props.parts.map(makeGroupItem)
-    return <ListGroup>{items}</ListGroup>;
-}
 
 
 class BuilderComponent extends React.Component<BuilderProps, BuilderState> {
@@ -137,19 +60,25 @@ class BuilderComponent extends React.Component<BuilderProps, BuilderState> {
                     <Row>
                         <Col sm={6}>
                             <h3>Ship Loadout</h3>
-                            {partTable({
-                                ship: this.props.ship,
-                                partBeingPlaced: this.state.partBeingPlaced,
-                                onCellSelected: this.onCellSelected.bind(this)
-                            })}
+                            <ShipTable
+                                ship={this.props.ship}
+                                onCellSelected={this.onCellSelected.bind(this)}
+                                partBeingPlaced={this.state.partBeingPlaced}
+                                onPartSelected={this.onPartSelected.bind(this)}                                
+                            />
                         </Col>
                         <Col sm={6}>
                             <h3>Parts in storage</h3>
-                            {storage({
-                                parts: this.props.storage,
-                                onPartSelected: this.onPartSelected.bind(this),
-                                partBeingPlaced: this.state.partBeingPlaced
-                            })}
+                            <StorageParts
+                                parts={this.props.storage}
+                                onPartSelected={this.onPartSelected.bind(this)}
+                                partBeingPlaced={this.state.partBeingPlaced}
+                            />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm={6}>
+                            <h3>Part details</h3>
                         </Col>
                     </Row>
                 </Grid>
