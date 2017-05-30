@@ -1,21 +1,42 @@
 import * as React from 'react'
 import { Range } from 'immutable'
 import { Table, Button } from 'react-bootstrap'
+import { connect } from 'react-redux'
+import { Action, Dispatch } from 'redux'
 
-import { Ship, ShipPart } from '../model/interfaces'
-import { BuilderState } from './interfaces'
+import { Ship, ShipPart, State } from '../model/interfaces'
+import { SELECT_SHIP_PART, PLACE_SHIP_PART } from '../model/actions'
 
-interface TableProps extends BuilderState {
+interface StateProps {
     ship: Ship,
-    onCellSelected: (i: number, j: number) => void;
-    onPartSelected: (part: ShipPart) => void;
+    selectedShipPart?: ShipPart
 }
 
-export const ShipTable = (props: TableProps) => {
+interface DispatchProps {
+    onPartSelected: (part: ShipPart) => void,
+    onPartPlaced: (part: ShipPart, i: number, j: number) => void
+}
+
+const mapStateToProps = (state: State): StateProps => ({
+    ship: state.ship,
+    selectedShipPart: state.ui.selectedPart && state.ui.selectedPart.part
+})
+
+const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
+    onPartSelected: (part: ShipPart) => dispatch({ type: SELECT_SHIP_PART, payload: part }),
+    onPartPlaced: (part: ShipPart, i: number, j: number) => dispatch({ type: PLACE_SHIP_PART, payload: {part, i, j} })
+})
+
+
+const render = (props: StateProps&DispatchProps) => {
 
     const ship = props.ship
-    const isBeingPlaced = props.partBeingPlaced !== undefined
-    const onCellSelected = isBeingPlaced ? props.onCellSelected : () => undefined;
+    const isBeingPlaced = props.selectedShipPart ? true : false
+    const onPartPlaced = (i: number, j: number) => {
+        if (props.selectedShipPart) {
+            props.onPartPlaced(props.selectedShipPart, i, j)
+        }
+    }
 
     const makePartCell = (part: ShipPart) => {
         const onClick = () => props.onPartSelected(part)
@@ -33,7 +54,7 @@ export const ShipTable = (props: TableProps) => {
         const className = isBeingPlaced && !part ? 'selectable' : ''
 
         return (
-            <td key={key} className={className} onClick={() => onCellSelected(i, j)}>
+            <td key={key} className={className} onClick={() => onPartPlaced(i, j)}>
                 {part ? makePartCell(part) : '-'}
             </td>
         )
@@ -62,3 +83,5 @@ export const ShipTable = (props: TableProps) => {
         </Table>
     )
 }
+
+export const ShipTable = connect<StateProps, DispatchProps, {}>(mapStateToProps, mapDispatchToProps)(render)

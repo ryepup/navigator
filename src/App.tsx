@@ -19,7 +19,7 @@ const Home = () => (
   </div>
 )
 
-class App extends React.Component<null, null> {
+class App extends React.Component<{}, {}> {
   render() {
     return (
       <Provider store={store}>
