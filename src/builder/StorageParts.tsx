@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { Action, Dispatch } from 'redux'
 
 import { ShipPart, State, SelectedPart } from '../model/interfaces'
-import { SELECT_STORAGE_PART } from '../model/actions'
+import { makeSelectStoragePartAction } from '../model/actions'
 
 
 const mapStateToProps = (state: State): StateProps => ({
@@ -13,7 +13,7 @@ const mapStateToProps = (state: State): StateProps => ({
 })
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
-    onPartSelected: (part: ShipPart) => dispatch({ type: SELECT_STORAGE_PART, payload: part })
+    onPartSelected: (part: ShipPart) => dispatch(makeSelectStoragePartAction(part))
 })
 
 interface StateProps {

@@ -4,15 +4,18 @@ import { Button } from 'react-bootstrap'
 import { Action, Dispatch } from 'redux'
 
 import { State, ShipPart, SelectedPart } from '../model/interfaces'
-import { CANCEL_SELECT_PART, UNINSTALL_PART } from '../model/actions'
+import { 
+    makeCancelSelectPartAction,
+    makeUninstallPartAction 
+} from '../model/actions'
 
 const mapStateToProps = (state: State): StateProps => ({
     selectedPart: state.ui.selectedPart
 })
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>): DispatchProps => ({
-    onCancel: (part: ShipPart) => dispatch({ type: CANCEL_SELECT_PART, payload: part }),
-    onUninstall: (part: ShipPart) => dispatch({ type: UNINSTALL_PART, payload: part }),
+    onCancel: (part: ShipPart) => dispatch(makeCancelSelectPartAction(part)),
+    onUninstall: (part: ShipPart) => dispatch(makeUninstallPartAction(part)),
 })
 
 

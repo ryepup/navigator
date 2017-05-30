@@ -1,34 +1,33 @@
-import { combineReducers } from 'redux'
-import { InstalledPart } from '../interfaces'
-import { 
-    PlaceShipPartAction, PLACE_SHIP_PART,
-    UninstallPartAction, UNINSTALL_PART,
-    OtherAction 
+import { combineReducers, Action } from 'redux'
+import { isType } from 'typescript-fsa'
+
+import { InstalledPart, ShipPart } from '../interfaces'
+import {
+    makePlaceShipPartAction,
+    makeUninstallPartAction
 } from '../actions'
 
-type ShipPartActions = PlaceShipPartAction | UninstallPartAction | OtherAction
-const shipPartReducer = (state: InstalledPart[][] = [[], [], []], action: ShipPartActions) => {
-    switch (action.type) {
-        case PLACE_SHIP_PART:
-            const {i, j, part} = action.payload
-            const copy = state.map(row => row.map(val => {
-                return val === part ? undefined : val
-            }))
-            copy[i][j] = part
-            return copy
-        case UNINSTALL_PART:
-            return state.map(row => row.map(val => {
-                return val === action.payload ? undefined : val
-            }))
-        default:
-            return state
+const removePart = (parts: InstalledPart[][], partToRemove: ShipPart) => {
+    return parts.map(row => row.map(val => {
+        return val === partToRemove ? undefined : val
+    }))
+}
+
+const shipPartReducer = (state: InstalledPart[][] = [[], [], []], action: Action) => {
+    if (isType(action, makePlaceShipPartAction)) {
+        const { i, j, part } = action.payload
+        const copy = removePart(state, part)
+        copy[i][j] = part
+        return copy
+    } else if (isType(action, makeUninstallPartAction)) {
+        return removePart(state, action.payload)
+    } else {
+        return state
     }
 }
 
-
-
 export const shipReducer = combineReducers({
     parts: shipPartReducer,
-    height: (state: number = 3, action: OtherAction) => state,
-    width: (state: number = 3, action: OtherAction) => state
+    height: (state: number = 3, action: Action) => state,
+    width: (state: number = 3, action: Action) => state
 })

@@ -1,30 +1,28 @@
-import { combineReducers } from 'redux'
+import { combineReducers, Action } from 'redux'
+import { isType } from 'typescript-fsa'
 
 import { SelectedPart } from '../interfaces'
 import {
-    SelectStoragePartAction, SELECT_STORAGE_PART,
-    SelectShipPartAction, SELECT_SHIP_PART,
-    CancelSelectPartAction, CANCEL_SELECT_PART,
-    PlaceShipPartAction, PLACE_SHIP_PART,
-    UninstallPartAction, UNINSTALL_PART,
-    OtherAction
+    makeCancelSelectPartAction,
+    makePlaceShipPartAction,
+    makeUninstallPartAction,
+    makeSelectShipPartAction,
+    makeSelectStoragePartAction
 } from '../actions'
 
-type StorageActions = SelectStoragePartAction | SelectShipPartAction 
-    | CancelSelectPartAction | PlaceShipPartAction 
-    | UninstallPartAction | OtherAction
-export const selectedShipPartReducer = (state: SelectedPart|null = null, action: StorageActions): SelectedPart|null => {
-    switch (action.type) {
-        case SELECT_STORAGE_PART:
-            return { part: action.payload, isInstalled: false}
-        case SELECT_SHIP_PART:
-            return { part: action.payload, isInstalled: true}
-        case PLACE_SHIP_PART:
-        case CANCEL_SELECT_PART:
-        case UNINSTALL_PART:
-            return null
-        default:
-            return state
+export const selectedShipPartReducer = (state: SelectedPart | null = null, action: Action): SelectedPart | null => {
+    if (isType(action, makeSelectStoragePartAction)) {
+        return { part: action.payload, isInstalled: false }
+    } else if (isType(action, makeSelectShipPartAction)) {
+        return { part: action.payload, isInstalled: true }
+    } else if (
+        isType(action, makePlaceShipPartAction)
+        || isType(action, makeCancelSelectPartAction)
+        || isType(action, makeUninstallPartAction)
+    ) {
+        return null
+    } else {
+        return state
     }
 }
 

@@ -5,7 +5,10 @@ import { connect } from 'react-redux'
 import { Action, Dispatch } from 'redux'
 
 import { Ship, ShipPart, State } from '../model/interfaces'
-import { SELECT_SHIP_PART, PLACE_SHIP_PART } from '../model/actions'
+import { 
+    makeSelectShipPartAction,
+    makePlaceShipPartAction
+} from '../model/actions'
 
 interface StateProps {
     ship: Ship,
@@ -23,8 +26,8 @@ const mapStateToProps = (state: State): StateProps => ({
 })
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
-    onPartSelected: (part: ShipPart) => dispatch({ type: SELECT_SHIP_PART, payload: part }),
-    onPartPlaced: (part: ShipPart, i: number, j: number) => dispatch({ type: PLACE_SHIP_PART, payload: {part, i, j} })
+    onPartSelected: (part: ShipPart) => dispatch(makeSelectShipPartAction(part)),
+    onPartPlaced: (part: ShipPart, i: number, j: number) => dispatch(makePlaceShipPartAction( {part, i, j}))
 })
 
 
