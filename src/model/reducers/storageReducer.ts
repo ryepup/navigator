@@ -1,20 +1,13 @@
-import { Action } from 'redux'
-import { isType } from 'typescript-fsa'
+import { reducerWithInitialState } from 'typescript-fsa-reducers'
 
 import QDrive from '../parts/QDrive'
-import { ShipPart } from '../interfaces'
 import { 
     makePlaceShipPartAction,
     makeUninstallPartAction
 } from '../actions'
 
 
-export const storageReducer = (state: ShipPart[] = [new QDrive()], action: Action): ShipPart[] => {
-    if (isType(action, makePlaceShipPartAction)) {
-        return state.filter(x => x !== action.payload.part)
-    } else if (isType(action, makeUninstallPartAction)) {
-        return [action.payload].concat(state)
-    } else {
-        return state
-    }
-}
+export const storageReducer = reducerWithInitialState([new QDrive()])
+    .case(makeUninstallPartAction, (state, part) => [part].concat(state))
+    .case(makePlaceShipPartAction, (state, placed) => state.filter(x => x !== placed.part))
+    .build()

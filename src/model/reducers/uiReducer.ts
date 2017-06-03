@@ -1,7 +1,6 @@
-import { combineReducers, Action } from 'redux'
-import { isType } from 'typescript-fsa'
+import { reducerWithInitialState } from 'typescript-fsa-reducers'
 
-import { SelectedPart } from '../interfaces'
+import { Ui } from '../interfaces'
 import {
     makeCancelSelectPartAction,
     makePlaceShipPartAction,
@@ -10,22 +9,23 @@ import {
     makeSelectStoragePartAction
 } from '../actions'
 
-export const selectedShipPartReducer = (state: SelectedPart | null = null, action: Action): SelectedPart | null => {
-    if (isType(action, makeSelectStoragePartAction)) {
-        return { part: action.payload, isInstalled: false }
-    } else if (isType(action, makeSelectShipPartAction)) {
-        return { part: action.payload, isInstalled: true }
-    } else if (
-        isType(action, makePlaceShipPartAction)
-        || isType(action, makeCancelSelectPartAction)
-        || isType(action, makeUninstallPartAction)
-    ) {
-        return null
-    } else {
-        return state
-    }
-}
 
-export const uiReducer = combineReducers({
-    selectedPart: selectedShipPartReducer
-})
+const initialUi: Ui = {}
+
+export const uiReducer = reducerWithInitialState(initialUi)
+    .case(makeSelectStoragePartAction, (state, part) => {
+        return {...state, selectedPart: { part, isInstalled: false }}
+    })
+    .case(makeSelectShipPartAction, (state, part) => {
+        return {...state, selectedPart: { part, isInstalled: true }}
+    })
+    .case(makePlaceShipPartAction, (state, part) => {
+        return {...state, selectedPart: undefined}
+    })
+    .case(makeCancelSelectPartAction, (state, part) => {
+        return {...state, selectedPart: undefined}
+    })
+    .case(makeUninstallPartAction, (state, part) => {
+        return {...state, selectedPart: undefined}
+    })
+    .build()

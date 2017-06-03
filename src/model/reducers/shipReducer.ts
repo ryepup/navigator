@@ -1,5 +1,5 @@
 import { combineReducers, Action } from 'redux'
-import { isType } from 'typescript-fsa'
+import { reducerWithInitialState } from 'typescript-fsa-reducers'
 
 import { InstalledPart, ShipPart } from '../interfaces'
 import {
@@ -13,18 +13,17 @@ const removePart = (parts: InstalledPart[][], partToRemove: ShipPart) => {
     }))
 }
 
-const shipPartReducer = (state: InstalledPart[][] = [[], [], []], action: Action) => {
-    if (isType(action, makePlaceShipPartAction)) {
-        const { i, j, part } = action.payload
+const initialParts: InstalledPart[][] = [[], [], []]
+
+const shipPartReducer = reducerWithInitialState(initialParts)
+    .case(makePlaceShipPartAction, (state, placed) => {
+        const { i, j, part } = placed
         const copy = removePart(state, part)
         copy[i][j] = part
         return copy
-    } else if (isType(action, makeUninstallPartAction)) {
-        return removePart(state, action.payload)
-    } else {
-        return state
-    }
-}
+    })
+    .case(makeUninstallPartAction, removePart)
+    .build()
 
 export const shipReducer = combineReducers({
     parts: shipPartReducer,
